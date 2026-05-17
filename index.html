@@ -7,6 +7,15 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#4f46e5">
+  <!-- PWA 설정: 홈화면 추가 시 주소창 없는 앱처럼 실행 -->
+  <meta name="application-name" content="로또 조합기">
+  <meta name="apple-mobile-web-app-title" content="로또 조합기">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+
   
   <title>스마트 로또 조합기 PRO</title>
   
@@ -48,6 +57,13 @@
     @keyframes ballPop {
       to { opacity: 1; transform: scale(1) rotate(0deg); }
     }
+
+    /* 홈화면에서 실행된 PWA 모드 보정 */
+    @media (display-mode: standalone) {
+      body { padding-top: env(safe-area-inset-top); }
+      header { padding-top: calc(1rem + env(safe-area-inset-top)); }
+    }
+
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 select-none">
@@ -121,6 +137,21 @@
   <canvas id="hiddenCanvas" class="hidden"></canvas>
 
   <script>
+
+    // PWA 등록: GitHub Pages에서 홈화면 추가 시 독립 실행 앱 모드 지원
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(err => {
+          console.log('Service worker registration failed:', err);
+        });
+      });
+    }
+
+    // 앱 모드로 실행 중인지 확인하는 보조 함수
+    function isStandaloneAppMode() {
+      return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+    }
+
     const grid = document.getElementById("inputGrid");
     
     // 6x5 인풋 격자 엔진 빌드
@@ -164,29 +195,105 @@
       `;
     }
 
-    // 💥 핵심 기능: 고대비 흑백 전처리 필터 및 숫자 매칭 강화 알고리즘
+    // ✅ 개선판: 로또 용지 OCR 전용 전처리 + 후보번호 검증
+    // 핵심 변경점
+    // 1) 원본 그대로 OCR하지 않고 2.5배 확대
+    // 2) 너무 강한 고정 임계값(130) 대신 대비 보정 + 자동 임계값 사용
+    // 3) OCR 문자 범위를 숫자/공백으로 제한
+    // 4) 전체 숫자를 무작정 입력하지 않고, "1~45 숫자 6개짜리 줄"을 우선 추출
     function preprocessImage(imgElement) {
       const canvas = document.getElementById("hiddenCanvas");
-      const ctx = canvas.getContext("2d");
-      
-      canvas.width = imgElement.width;
-      canvas.height = imgElement.height;
-      ctx.drawImage(imgElement, 0, 0);
-      
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+
+      const scale = 2.5;
+      const srcW = imgElement.naturalWidth || imgElement.width;
+      const srcH = imgElement.naturalHeight || imgElement.height;
+
+      canvas.width = Math.round(srcW * scale);
+      canvas.height = Math.round(srcH * scale);
+
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = "high";
+      ctx.drawImage(imgElement, 0, 0, canvas.width, canvas.height);
+
       const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       const data = imgData.data;
-      
-      // 이미지 이진화 처리 (그림자를 없애고 텍스트 선명도를 극대화)
-      for (let i = 0; i < data.length; i += 4) {
-        const brightness = 0.34 * data[i] + 0.5 * data[i + 1] + 0.16 * data[i + 2];
-        // 문자와 배경의 경계 임계값을 보정하여 영수증 서체 인식률 향상
-        const v = (brightness < 130) ? 0 : 255;
-        data[i] = v;
-        data[i+1] = v;
-        data[i+2] = v;
+
+      // 평균 밝기를 먼저 구해서 사진마다 다른 조명에 대응
+      let sum = 0;
+      const gray = new Uint8ClampedArray(data.length / 4);
+      for (let i = 0, j = 0; i < data.length; i += 4, j++) {
+        const g = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+        gray[j] = g;
+        sum += g;
       }
+      const avg = sum / gray.length;
+      const threshold = Math.max(95, Math.min(185, avg * 0.86));
+
+      for (let i = 0, j = 0; i < data.length; i += 4, j++) {
+        // 대비 강화: 숫자 획은 더 진하게, 배경은 더 밝게
+        let v = (gray[j] - 128) * 1.45 + 128;
+        v = v < threshold ? 0 : 255;
+        data[i] = data[i + 1] = data[i + 2] = v;
+      }
+
       ctx.putImageData(imgData, 0, 0);
-      return canvas.toDataURL();
+      return canvas.toDataURL("image/png");
+    }
+
+    function normalizeOcrMistakes(text) {
+      return text
+        .replace(/[Oo]/g, "0")
+        .replace(/[Il|]/g, "1")
+        .replace(/[Ss]/g, "5")
+        .replace(/[Bb]/g, "8");
+    }
+
+    function parseLottoNumbersFromText(rawText) {
+      const text = normalizeOcrMistakes(rawText);
+      const lines = text
+        .split(/\n+/)
+        .map(line => line.replace(/[^0-9\s]/g, " ").replace(/\s+/g, " ").trim())
+        .filter(Boolean);
+
+      const candidateRows = [];
+
+      for (const line of lines) {
+        let nums = line
+          .split(/\s+/)
+          .map(v => parseInt(v, 10))
+          .filter(n => Number.isInteger(n) && n >= 1 && n <= 45);
+
+        // OCR이 01 02 03을 010203처럼 붙여 읽은 경우 보정
+        const compact = line.replace(/\D/g, "");
+        if (nums.length < 6 && compact.length >= 12) {
+          const byTwoDigits = compact.match(/\d{2}/g) || [];
+          const converted = byTwoDigits
+            .map(v => parseInt(v, 10))
+            .filter(n => Number.isInteger(n) && n >= 1 && n <= 45);
+          if (converted.length >= nums.length) nums = converted;
+        }
+
+        // 로또 한 줄은 보통 6개 번호. 6개 이상이면 앞의 6개만 후보로 취급
+        if (nums.length >= 6) {
+          const row = [...new Set(nums)].slice(0, 6);
+          if (row.length >= 5) candidateRows.push(row);
+        }
+      }
+
+      // 6개짜리 줄이 잡히면 그 줄들만 사용. 없으면 전체에서 보수적으로 추출
+      let picked = [];
+      if (candidateRows.length > 0) {
+        picked = candidateRows.flat();
+      } else {
+        picked = text
+          .replace(/[^0-9\s]/g, " ")
+          .split(/\s+/)
+          .map(v => parseInt(v, 10))
+          .filter(n => Number.isInteger(n) && n >= 1 && n <= 45);
+      }
+
+      return [...new Set(picked)].slice(0, 30);
     }
 
     async function processOcrWithFilter(inputElement) {
@@ -200,49 +307,39 @@
 
       overlay.classList.remove("hidden");
       titleText.textContent = "이미지 보정 중...";
-      progressText.textContent = "AI 최적화 전처리 필터를 적용하고 있습니다.";
-      progressBar.style.width = "20%";
+      progressText.textContent = "번호 인식용 확대/흑백 보정을 적용하고 있습니다.";
+      progressBar.style.width = "15%";
 
       const reader = new FileReader();
       reader.onload = async function(e) {
         const img = new Image();
         img.onload = async function() {
-          // 보정 필터가 적용된 새 이미지 주소 획득
           const filteredSrc = preprocessImage(img);
-          
-          titleText.textContent = "AI 숫자 분석 중...";
-          progressText.textContent = "보정된 데이터에서 번호를 추출하는 중...";
-          progressBar.style.width = "40%";
 
+          titleText.textContent = "로또 번호 분석 중...";
+          progressText.textContent = "숫자만 인식하도록 OCR을 제한하고 있습니다.";
+          progressBar.style.width = "35%";
+
+          let worker = null;
           try {
-            const result = await Tesseract.recognize(
-              filteredSrc,
-              'eng',
-              {
-                logger: m => {
-                  if (m.status === 'recognizing text') {
-                    const percent = Math.round(m.progress * 100);
-                    progressText.textContent = `정밀 판독 진행률: ${percent}%`;
-                    progressBar.style.width = `${40 + (percent * 0.55)}%`;
-                  }
+            worker = await Tesseract.createWorker('eng', 1, {
+              logger: m => {
+                if (m.status === 'recognizing text') {
+                  const percent = Math.round(m.progress * 100);
+                  progressText.textContent = `정밀 판독 진행률: ${percent}%`;
+                  progressBar.style.width = `${35 + (percent * 0.6)}%`;
                 }
-              }
-            );
-
-            const text = result.data.text;
-            
-            // 로또 특유의 한 자리 공백 및 노이즈 문자를 깨끗이 정리하고 정수형 배열화
-            const tokens = text.replace(/[^0-9\s]/g, ' ').split(/\s+/);
-            let numArr = [];
-            tokens.forEach(t => {
-              const parsed = parseInt(t, 10);
-              if (!isNaN(parsed) && parsed >= 1 && parsed <= 45) {
-                numArr.push(parsed);
               }
             });
 
-            // 중복 번호 완벽 제거
-            const uniqueNumbers = [...new Set(numArr)];
+            await worker.setParameters({
+              tessedit_char_whitelist: '0123456789 ',
+              tessedit_pageseg_mode: Tesseract.PSM.SPARSE_TEXT
+            });
+
+            const result = await worker.recognize(filteredSrc);
+            const text = result.data.text || "";
+            const uniqueNumbers = parseLottoNumbersFromText(text);
 
             if (uniqueNumbers.length > 0) {
               const inputs = document.querySelectorAll("input[type='number']");
@@ -256,14 +353,19 @@
                 inputs[i].value = uniqueNumbers[i];
                 inputs[i].classList.add("border-green-500", "bg-green-50");
               }
-              showCustomToast(`🎉 전처리 필터 분석으로 번호 ${fillCount}개를 자동 기입했습니다!`);
+
+              showCustomModal(
+                "인식 결과 확인",
+                `자동 인식된 번호: ${uniqueNumbers.slice(0, fillCount).join(', ')}<br><br>사진 OCR은 100%가 아니므로 틀린 번호가 있으면 입력칸에서 바로 수정해 주세요.`
+              );
             } else {
-              showCustomModal("인식 재시도 안내", "필터 보정 후에도 유효한 숫자가 발견되지 않았습니다. 좀 더 밝고 평평한 곳에서 흔들림 없이 정면으로 촬영해 주세요.");
+              showCustomModal("인식 재시도 안내", "유효한 로또 번호를 찾지 못했습니다. 번호 부분만 크게, 정면에서, 그림자 없이 촬영해 주세요.");
             }
           } catch (err) {
             console.error(err);
-            showCustomModal("오류", "데이터 처리 중 연산 지연이 발생했습니다. 다시 시도해 주세요.");
+            showCustomModal("오류", "OCR 처리 중 오류가 발생했습니다. 사진을 조금 더 밝게 다시 찍어 주세요.");
           } finally {
+            if (worker) await worker.terminate();
             overlay.classList.add("hidden");
             inputElement.value = "";
           }
