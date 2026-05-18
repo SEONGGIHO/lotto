@@ -1,24 +1,15 @@
 {
-  "name": "스마트 로또 조합기 PRO",
-  "short_name": "로또조합기",
+  "name": "스마트 로또 보완균형 조합기",
+  "short_name": "로또보완",
+  "description": "자동 5게임 번호를 붙여넣으면 빠진 번호를 보완해 균형 조합을 생성합니다.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f8fafc",
-  "theme_color": "#4f46e5",
   "orientation": "portrait",
+  "background_color": "#f3f4f6",
+  "theme_color": "#4f46e5",
   "icons": [
-    {
-      "src": "icons/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "icons/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
+    {"src":"./icons/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
+    {"src":"./icons/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
   ]
 }

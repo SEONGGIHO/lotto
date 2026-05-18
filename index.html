@@ -8,333 +8,307 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#4f46e5">
   <link rel="manifest" href="./manifest.webmanifest">
-  <title>스마트 로또 조합기 PRO v7</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <title>스마트 로또 보완균형 조합기 v9</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <style>
-    body{background-color:#f3f4f6;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;padding-bottom:120px;-webkit-tap-highlight-color:transparent}
+    body{background:#f3f4f6;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;padding-bottom:120px;-webkit-tap-highlight-color:transparent}
     .ball-1-10{background:radial-gradient(circle at 30% 30%,#fef08a,#eab308);color:#1e293b;text-shadow:0 1px 1px rgba(255,255,255,.5)}
     .ball-11-20{background:radial-gradient(circle at 30% 30%,#bfdbfe,#2563eb);color:#fff}
     .ball-21-30{background:radial-gradient(circle at 30% 30%,#fecaca,#dc2626);color:#fff}
     .ball-31-40{background:radial-gradient(circle at 30% 30%,#e2e8f0,#475569);color:#fff}
     .ball-41-45{background:radial-gradient(circle at 30% 30%,#bbf7d0,#16a34a);color:#fff}
-    .lotto-ball{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:50%;font-weight:800;font-size:17px;box-shadow:0 4px 6px -1px rgba(0,0,0,.15),0 2px 4px -1px rgba(0,0,0,.1);animation:ballPop .45s cubic-bezier(.175,.885,.32,1.275) forwards;opacity:0;transform:scale(.3) rotate(-180deg)}
+    .lotto-ball{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:9999px;font-weight:900;font-size:16px;box-shadow:0 4px 6px -1px rgba(0,0,0,.16),0 2px 4px -1px rgba(0,0,0,.1);animation:ballPop .35s cubic-bezier(.175,.885,.32,1.275) forwards;opacity:0;transform:scale(.35) rotate(-160deg)}
     @keyframes ballPop{to{opacity:1;transform:scale(1) rotate(0deg)}}
+    .mini-ball{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:9999px;font-size:11px;font-weight:800;background:#eef2ff;color:#3730a3;margin:1px}
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 select-none">
-  <header class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-4 px-4 sticky top-0 z-10 shadow-md safe-top">
+  <header class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-4 px-4 sticky top-0 z-10 shadow-md">
     <div class="max-w-md mx-auto flex justify-between items-center">
-      <h1 class="text-lg font-black tracking-tight flex items-center gap-2"><i class="fa-solid fa-dice-d20 text-yellow-300"></i>스마트 로또 조합기 PRO</h1>
-      <button onclick="resetAll()" class="text-xs bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-full transition-all"><i class="fa-solid fa-rotate-left"></i> 전체 초기화</button>
+      <h1 class="text-lg font-black tracking-tight flex items-center gap-2"><i class="fa-solid fa-dice-d20 text-yellow-300"></i>로또 보완균형 조합기</h1>
+      <button onclick="resetAll()" class="text-xs bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-full transition-all"><i class="fa-solid fa-rotate-left"></i> 초기화</button>
     </div>
   </header>
+
   <main class="max-w-md mx-auto px-4 mt-4">
-    <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 mb-4">
-      <div class="flex justify-between items-center mb-3">
-        <h3 class="text-sm font-bold text-slate-500 flex items-center gap-1.5"><i class="fa-solid fa-ban text-red-500"></i> 제외할 번호 입력 (6열 5행)</h3>
-        <div class="flex gap-2">
-          <button onclick="openPasteModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-all shadow-md shadow-emerald-100">
-            <i class="fa-solid fa-paste"></i> 복붙 입력
-          </button>
-          <label for="cameraInput" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-all shadow-md shadow-indigo-100">
-            <i class="fa-solid fa-camera"></i> 촬영 입력
-          </label>
-        </div>
-        <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden" onchange="processOcrFixedTicket(this)">
+    <section class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 mb-4">
+      <div class="flex justify-between items-center mb-3 gap-2">
+        <h3 class="text-sm font-bold text-slate-600 flex items-center gap-1.5"><i class="fa-solid fa-ticket text-indigo-500"></i> 자동 5게임 번호 입력</h3>
+        <button onclick="openPasteModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md shadow-emerald-100 active:scale-[0.97] transition-all">
+          <i class="fa-solid fa-paste"></i> 복붙 입력
+        </button>
       </div>
       <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 text-[12px] leading-relaxed rounded-xl p-3 mb-3">
-        <b>추천 방식:</b> Gemini/사진 앱에서 번호를 텍스트로 추출한 뒤 <b>복붙 입력</b>을 누르고 붙여넣으세요. 예: <b>A 수동 09 15 24 33 39 41</b>
-      </div>
-      <div class="bg-amber-50 border border-amber-200 text-amber-800 text-[12px] leading-relaxed rounded-xl p-3 mb-3">
-        <b>촬영 입력은 보조 기능:</b> 로또 용지를 접어서 <b>A~E 번호표 5줄만</b> 가로로 크게 찍어주세요. QR·날짜·금액·바코드는 빼주세요.
+        <b>사용법:</b> Gemini/ChatGPT가 읽어준 자동 5게임 번호를 붙여넣으세요. 이 번호는 무조건 제외가 아니라 <b>이미 자동에서 사용된 번호</b>로 보고, 빠진 번호를 보완합니다.
       </div>
       <div class="grid grid-cols-6 gap-2" id="inputGrid"></div>
       <div class="flex justify-between items-center mt-3">
-        <p class="text-[11px] text-slate-400">* 자동입력 후 틀린 칸만 직접 수정하세요.</p>
+        <p class="text-[11px] text-slate-400">* 틀린 칸은 직접 수정 가능합니다.</p>
         <button onclick="clearInputsOnly()" class="text-[11px] font-bold text-indigo-600 hover:underline">입력창만 비우기</button>
       </div>
-    </div>
+    </section>
+
+    <section id="inputSummary" class="hidden bg-white rounded-2xl p-4 shadow-sm border border-slate-100 mb-4"></section>
+
     <div class="text-center my-4">
-      <button onclick="generateLotto()" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-3.5 px-6 rounded-2xl font-bold text-lg shadow-lg shadow-indigo-100 active:scale-[0.97] transition-all flex items-center justify-center gap-2">
-        <i class="fa-solid fa-wand-magic-sparkles"></i> 대박 기원 조합 생성하기
+      <button onclick="generateBalancedComplement()" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-3.5 px-6 rounded-2xl font-bold text-lg shadow-lg shadow-indigo-100 active:scale-[0.97] transition-all flex items-center justify-center gap-2">
+        <i class="fa-solid fa-wand-magic-sparkles"></i> 보완균형조합 생성하기
       </button>
     </div>
+
     <div id="resultBox" class="space-y-3">
       <div id="emptyState" class="bg-white rounded-2xl p-8 text-center border-2 border-dashed border-slate-200">
         <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3"><i class="fa-solid fa-dice text-slate-300 text-3xl"></i></div>
-        <p class="text-sm text-slate-400 font-medium">제외할 번호를 지정한 뒤<br>'조합 생성하기' 버튼을 눌러주세요!</p>
+        <p class="text-sm text-slate-400 font-medium">자동 5게임 번호를 붙여넣고<br>보완균형조합을 생성하세요.</p>
       </div>
     </div>
   </main>
-  <div id="loadingOverlay" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-xs z-50 flex flex-col items-center justify-center text-white px-6 text-center">
-    <div class="bg-white text-slate-800 p-6 rounded-3xl shadow-2xl max-w-xs w-full flex flex-col items-center">
-      <div class="animate-spin rounded-full h-12 w-12 border-4 border-indigo-600 border-t-transparent mb-4"></div>
-      <h4 class="font-bold text-lg text-slate-900 mb-1" id="loadingTitle">번호표 분석 중...</h4>
-      <p class="text-xs text-slate-500 mb-4 leading-relaxed" id="ocrProgress">30칸을 하나씩 빠르게 읽고 있습니다.</p>
-      <div class="w-full bg-slate-100 rounded-full h-2"><div id="ocrProgressBar" class="bg-indigo-600 h-2 rounded-full transition-all duration-300" style="width:10%"></div></div>
-    </div>
-  </div>
-  <canvas id="hiddenCanvas" class="hidden"></canvas>
+
   <script>
     if ('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
-    const grid=document.getElementById("inputGrid");
-    for(let i=0;i<30;i++){const input=document.createElement("input");input.type="number";input.inputMode="numeric";input.min=1;input.max=45;input.placeholder="-";input.className="w-full text-center py-2.5 font-bold text-slate-700 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all";grid.appendChild(input);}
-    function getBallColorClass(n){if(n<=10)return"ball-1-10";if(n<=20)return"ball-11-20";if(n<=30)return"ball-21-30";if(n<=40)return"ball-31-40";return"ball-41-45"}
-    function clearInputsOnly(){document.querySelectorAll("input[type='number']").forEach(i=>{i.value="";i.classList.remove("border-green-500","bg-green-50","border-orange-400","bg-orange-50")});showCustomToast("입력 슬롯이 초기화되었습니다.")}
-    function resetAll(){clearInputsOnly();document.getElementById("resultBox").innerHTML=`<div id="emptyState" class="bg-white rounded-2xl p-8 text-center border-2 border-dashed border-slate-200"><div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3"><i class="fa-solid fa-dice text-slate-300 text-3xl"></i></div><p class="text-sm text-slate-400 font-medium">제외할 번호를 지정한 뒤<br>'조합 생성하기' 버튼을 눌러주세요!</p></div>`}
-    function loadImage(file){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=e=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=reject;img.src=e.target.result};r.onerror=reject;r.readAsDataURL(file)})}
-    function normalizeTicketImage(img){
-      const canvas=document.getElementById("hiddenCanvas"), ctx=canvas.getContext("2d",{willReadFrequently:true});
-      const iw=img.naturalWidth||img.width, ih=img.naturalHeight||img.height, ratio=iw/ih;
-      // v6 확정 방식: A~E 번호표만 가로 촬영. 전체 용지가 들어오면 대략 가운데 번호표만 자름.
-      let sx=0, sy=0, sw=iw, sh=ih;
-      if(ratio<1.35){ sx=iw*0.03; sy=ih*0.49; sw=iw*0.90; sh=ih*0.20; }
-      else { sx=iw*0.01; sy=ih*0.02; sw=iw*0.97; sh=ih*0.94; }
-      const targetW=1500, targetH=Math.max(260, Math.round(targetW*(sh/sw)));
-      canvas.width=targetW; canvas.height=targetH;
-      ctx.fillStyle="white"; ctx.fillRect(0,0,targetW,targetH);
-      ctx.drawImage(img,sx,sy,sw,sh,0,0,targetW,targetH);
 
-      // 약한 자동 회전/기울기 보정은 브라우저만으로 위험해서 하지 않음. 대신 대비만 보정.
-      const d=ctx.getImageData(0,0,targetW,targetH), a=d.data;
-      for(let i=0;i<a.length;i+=4){
-        let g=0.299*a[i]+0.587*a[i+1]+0.114*a[i+2];
-        g=(g-128)*1.75+128; g=Math.max(0,Math.min(255,g));
-        // 완전 이진화는 44/11을 깨뜨릴 수 있어 중간 회색을 남김
-        if(g<65) g=0; else if(g>222) g=255;
-        a[i]=a[i+1]=a[i+2]=g;
-      }
-      ctx.putImageData(d,0,0);
-      return canvas;
+    const grid=document.getElementById('inputGrid');
+    for(let i=0;i<30;i++){
+      const input=document.createElement('input');
+      input.type='number'; input.inputMode='numeric'; input.min=1; input.max=45; input.placeholder='-';
+      input.className='w-full text-center py-2.5 font-bold text-slate-700 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all';
+      input.addEventListener('input', updateInputSummary);
+      grid.appendChild(input);
     }
 
-    function cropCellCanvas(source,rowIndex,colIndex){
-      const out=document.createElement("canvas"), ctx=out.getContext("2d",{willReadFrequently:true});
-      // 왼쪽 A/B/C/D/E + 수동 글자 영역을 넉넉히 버리고, 숫자 6칸을 고정 그리드로 분할.
-      // v5 문제였던 '한 줄 통째 OCR'을 버리고, 30칸 각각을 따로 OCR한다.
-      const x0=source.width*0.205;
-      const x1=source.width*0.955;
-      const y0=source.height*0.135;
-      const y1=source.height*0.885;
-      const cellW=(x1-x0)/6;
-      const cellH=(y1-y0)/5;
-      const padX=cellW*0.10, padY=cellH*0.20;
-      let sx=x0+colIndex*cellW-padX;
-      let sy=y0+rowIndex*cellH-padY;
-      let sw=cellW+padX*2;
-      let sh=cellH+padY*2;
-      sx=Math.max(0,sx); sy=Math.max(0,sy);
-      if(sx+sw>source.width) sw=source.width-sx;
-      if(sy+sh>source.height) sh=source.height-sy;
-      out.width=210; out.height=120;
-      ctx.fillStyle="white"; ctx.fillRect(0,0,out.width,out.height);
-      ctx.drawImage(source,sx,sy,sw,sh,0,0,out.width,out.height);
-      return out;
+    function getBallColorClass(n){if(n<=10)return'ball-1-10';if(n<=20)return'ball-11-20';if(n<=30)return'ball-21-30';if(n<=40)return'ball-31-40';return'ball-41-45'}
+    function pad2(n){return String(n).padStart(2,'0')}
+    function randInt(max){return Math.floor(Math.random()*max)}
+    function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=randInt(i+1);[a[i],a[j]]=[a[j],a[i]]}return a}
+    function uniq(arr){return [...new Set(arr)]}
+
+    function getInputs(){
+      return [...document.querySelectorAll('#inputGrid input')].map(i=>parseInt(i.value,10)).filter(n=>Number.isInteger(n)&&n>=1&&n<=45);
     }
-
-    function parseCellNumber(text){
-      let t=(text||"").replace(/[OoQ]/g,"0").replace(/[Il|!]/g,"1").replace(/[Ss]/g,"5").replace(/[Zz]/g,"2").replace(/[^0-9]/g,"");
-      if(!t) return null;
-      // OCR이 '009'처럼 읽으면 뒤쪽 2자리 우선, '2'처럼 읽으면 02로 인정.
-      const candidates=[];
-      if(t.length===1) candidates.push(parseInt(t,10));
-      if(t.length>=2){
-        candidates.push(parseInt(t.slice(0,2),10));
-        candidates.push(parseInt(t.slice(-2),10));
-      }
-      if(t.length>=3){
-        for(let i=0;i+1<t.length;i++) candidates.push(parseInt(t.slice(i,i+2),10));
-      }
-      for(const n of candidates){ if(n>=1 && n<=45) return n; }
-      return null;
+    function getInputRows(){
+      const vals=[...document.querySelectorAll('#inputGrid input')].map(i=>parseInt(i.value,10));
+      const rows=[];
+      for(let r=0;r<5;r++) rows.push(vals.slice(r*6,r*6+6).filter(n=>Number.isInteger(n)&&n>=1&&n<=45));
+      return rows;
     }
-
-    async function withTimeout(promise,ms){let timer;const timeout=new Promise((_,rej)=>timer=setTimeout(()=>rej(new Error("OCR_TIMEOUT")),ms));return Promise.race([promise,timeout]).finally(()=>clearTimeout(timer))}
-
-    async function processOcrFixedTicket(inputElement){
-      const file=inputElement.files[0]; if(!file) return;
-      const overlay=document.getElementById("loadingOverlay"), progress=document.getElementById("ocrProgress"), bar=document.getElementById("ocrProgressBar");
-      overlay.classList.remove("hidden"); progress.textContent="번호표 이미지를 준비 중입니다."; bar.style.width="10%";
-      let worker=null;
-      try{
-        const img=await loadImage(file);
-        const norm=normalizeTicketImage(img);
-        progress.textContent="30칸을 하나씩 읽는 중입니다."; bar.style.width="18%";
-        worker=await Tesseract.createWorker("eng",1,{logger:()=>{}});
-        await worker.setParameters({
-          tessedit_char_whitelist:"0123456789",
-          tessedit_pageseg_mode:Tesseract.PSM.SINGLE_WORD,
-          preserve_interword_spaces:"0"
-        });
-        const rows=[[],[],[],[],[]];
-        let done=0;
-        for(let r=0;r<5;r++){
-          for(let c=0;c<6;c++){
-            const cellCanvas=cropCellCanvas(norm,r,c);
-            const res=await withTimeout(worker.recognize(cellCanvas),6000);
-            const n=parseCellNumber(res.data.text);
-            rows[r][c]=n;
-            done++;
-            progress.textContent=`번호 ${done}/30칸 인식 중...`;
-            bar.style.width=(18+Math.round(done/30*72))+"%";
-          }
-        }
-        const validCount=rows.flat().filter(n=>n!==null).length;
-        if(validCount===0){showCustomModal("인식 실패","A~E 번호표만 가로로 크게 찍어주세요. 숫자 6칸이 화면 안에 모두 들어와야 합니다.");return;}
-        fillInputsFromRows(rows);
-        showResultConfirm(rows, validCount);
-      }catch(e){
-        console.error(e);
-        showCustomModal("인식 오류","사진 처리 중 문제가 생겼습니다. 번호표만 가로로 더 크게, 더 반듯하게 찍어서 다시 시도해 주세요.");
-      }finally{
-        overlay.classList.add("hidden");
-        inputElement.value="";
-        if(worker) worker.terminate().catch(()=>{});
-      }
-    }
-
-    function fillInputsFromRows(rows){
-      const inputs=document.querySelectorAll("input[type='number']");
-      inputs.forEach(i=>{i.value="";i.classList.remove("border-green-500","bg-green-50","border-orange-400","bg-orange-50")});
-      rows.forEach((row,r)=>row.forEach((n,c)=>{const idx=r*6+c;if(inputs[idx]){if(n!==null) inputs[idx].value=n; inputs[idx].classList.add(n!==null?"border-green-500":"border-orange-400",n!==null?"bg-green-50":"bg-orange-50")}}));
-    }
-
-    function showResultConfirm(rows, validCount){
-      const letters=["A","B","C","D","E"];
-      const html=rows.map((r,i)=>`<div class="flex justify-between text-sm py-1 border-b border-slate-100"><b>${letters[i]}</b><span>${r.map(n=>n===null?'<span class="text-orange-600">??</span>':String(n).padStart(2,"0")).join("  ")}</span></div>`).join("");
-      const msg = validCount===30 ? "30칸 모두 인식했습니다. 그래도 실제 용지와 한 번만 대조하세요." : `${validCount}/30칸 인식했습니다. ?? 또는 틀린 칸만 직접 수정하세요.`;
-      showCustomModal("인식 결과 확인",`${html}<p class="text-[11px] text-slate-400 mt-3">${msg}</p>`);
-    }
-
+    function getFreq(nums){const f=Array(46).fill(0); nums.forEach(n=>{if(n>=1&&n<=45) f[n]++}); return f;}
+    function clearInputsOnly(){document.querySelectorAll('#inputGrid input').forEach(i=>{i.value='';i.classList.remove('border-green-500','bg-green-50')});updateInputSummary();showCustomToast('입력 슬롯이 초기화되었습니다.')}
+    function resetAll(){clearInputsOnly();document.getElementById('resultBox').innerHTML=`<div id="emptyState" class="bg-white rounded-2xl p-8 text-center border-2 border-dashed border-slate-200"><div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3"><i class="fa-solid fa-dice text-slate-300 text-3xl"></i></div><p class="text-sm text-slate-400 font-medium">자동 5게임 번호를 붙여넣고<br>보완균형조합을 생성하세요.</p></div>`}
 
     function openPasteModal(){
-      const modal=document.createElement("div");
-      modal.className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-5 z-50";
+      const modal=document.createElement('div');
+      modal.className='fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-5 z-50';
       modal.innerHTML=`
         <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl">
-          <h3 class="font-bold text-lg text-slate-900 mb-2 text-center">번호 복붙 입력</h3>
-          <p class="text-[12px] text-slate-500 leading-relaxed mb-3">
-            Gemini가 뽑아준 번호를 그대로 붙여넣으세요. A~E 줄 형식도 되고, 숫자 30개만 한 줄로 붙여넣어도 됩니다. <br>
-            예) A 수동 09 15 24 33 39 41
-          </p>
-          <textarea id="pasteLottoText" class="w-full h-44 p-3 text-sm border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-emerald-100 focus:border-emerald-500 font-mono" placeholder="A 수동 09 15 24 33 39 41\nB 수동 02 11 25 31 33 41\nC 수동 09 28 30 33 40 44\nD 수동 15 25 30 33 39 44\nE 수동 02 09 21 29 33 41"></textarea>
+          <h3 class="font-bold text-lg text-slate-900 mb-2 text-center">자동번호 복붙 입력</h3>
+          <p class="text-[12px] text-slate-500 leading-relaxed mb-3">A~E 줄 형식, 숫자 30개 한 줄 형식 모두 가능합니다. 줄 앞에 'A 수동', '1게임' 같은 글자가 있어도 각 줄의 <b>마지막 6개 번호</b>를 우선 읽습니다.</p>
+          <textarea id="pasteArea" class="w-full h-40 bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100" placeholder="A 수동 09 15 24 33 39 41\nB 수동 02 11 25 31 33 41\n..."></textarea>
           <div class="grid grid-cols-2 gap-2 mt-3">
-            <button onclick="this.closest('.fixed').remove()" class="bg-slate-100 text-slate-600 font-bold py-2.5 rounded-xl">취소</button>
-            <button onclick="applyPastedNumbers(this)" class="bg-emerald-600 text-white font-bold py-2.5 rounded-xl">입력 적용</button>
+            <button onclick="this.closest('.fixed').remove()" class="py-2.5 rounded-xl bg-slate-100 text-slate-600 font-bold text-sm">취소</button>
+            <button onclick="applyPastedNumbers()" class="py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-sm">입력 적용</button>
           </div>
         </div>`;
       document.body.appendChild(modal);
-      setTimeout(()=>document.getElementById("pasteLottoText")?.focus(),100);
+      setTimeout(()=>document.getElementById('pasteArea')?.focus(),100);
     }
 
-    function normalizeOcrTextForParse(text){
-      return (text||"")
-        .replace(/[０-９]/g,ch=>String.fromCharCode(ch.charCodeAt(0)-0xFEE0))
-        .replace(/[OoQ]/g,"0")
-        .replace(/[Il|!]/g,"1")
-        .replace(/[Ss]/g,"5");
+    function extractLottoTokens(text){
+      const out=[];
+      const re=/(^|[^0-9])(0?[1-9]|[1-3][0-9]|4[0-5])(?=$|[^0-9])/g;
+      let m; while((m=re.exec(text))!==null) out.push(parseInt(m[2],10));
+      return out;
     }
-
-    // 붙여넣기 안정화 핵심:
-    // - 09, 02 같은 1~2자리 숫자만 사용
-    // - 1145회, 2024년, 승인번호처럼 긴 숫자 덩어리는 버림
-    // - A/B/C/D/E 줄이 있으면 각 줄을 우선 사용
-    // - 숫자만 30개가 들어와도 6개씩 순서대로 사용
-    function extractLottoNumsFromText(part){
-      const chunks=(part.match(/\d+/g)||[]);
-      return chunks
-        .filter(x=>x.length<=2) // 1145, 2024, 170482 같은 긴 숫자는 제외
-        .map(x=>parseInt(x,10))
-        .filter(n=>Number.isInteger(n) && n>=1 && n<=45);
-    }
-
-    function isValidLottoRow(row){
-      return Array.isArray(row) && row.length===6 && row.every(n=>n>=1&&n<=45) && new Set(row).size===6;
-    }
-
-    function findBestSix(nums){
-      // 숫자가 6개면 그대로 사용. 7개 이상이면 연속 6개 묶음 중 중복 없는 첫 묶음을 우선 사용.
-      if(nums.length<6) return null;
-      if(nums.length===6) return isValidLottoRow(nums) ? nums : null;
-      for(let i=0;i<=nums.length-6;i++){
-        const cand=nums.slice(i,i+6);
-        if(isValidLottoRow(cand)) return cand;
+    function parsePastedNumbers(text){
+      const lines=text.split(/\n+/).map(s=>s.trim()).filter(Boolean);
+      const rowNumbers=[];
+      for(const line of lines){
+        const nums=extractLottoTokens(line);
+        if(nums.length>=6) rowNumbers.push(nums.slice(-6));
       }
-      return nums.slice(0,6);
+      if(rowNumbers.length>=5) return rowNumbers.slice(0,5).flat();
+      const all=extractLottoTokens(text);
+      if(all.length>=30) return all.slice(0,30);
+      return all;
+    }
+    function applyPastedNumbers(){
+      const area=document.getElementById('pasteArea');
+      const nums=parsePastedNumbers(area.value||'');
+      if(nums.length<30){showCustomModal('번호 부족',`인식된 로또번호가 ${nums.length}개입니다. 자동 5게임 기준 30개가 필요합니다.`);return;}
+      const inputs=document.querySelectorAll('#inputGrid input');
+      inputs.forEach((input,i)=>{input.value=nums[i]||'';input.classList.add('border-green-500','bg-green-50')});
+      document.querySelector('.fixed')?.remove();
+      updateInputSummary();
+      showCustomToast('자동번호 30개를 입력했습니다.');
     }
 
-    function findBestThirty(nums){
-      if(nums.length<30) return null;
-      // 전체 숫자가 30개 초과일 때는 6개씩 5줄 모두 중복 없는 구간을 찾음.
-      for(let start=0; start<=nums.length-30; start++){
-        const rows=[0,1,2,3,4].map(r=>nums.slice(start+r*6,start+(r+1)*6));
-        if(rows.every(isValidLottoRow)) return rows;
-      }
-      // 그래도 못 찾으면 앞에서 30개를 순서대로 사용하되, 사용자가 확인창에서 수정 가능.
-      return [0,1,2,3,4].map(r=>nums.slice(r*6,r*6+6));
+    function updateInputSummary(){
+      const box=document.getElementById('inputSummary');
+      const nums=getInputs();
+      if(nums.length===0){box.classList.add('hidden');box.innerHTML='';return;}
+      const unique=uniq(nums);
+      const missing=[]; for(let n=1;n<=45;n++) if(!unique.includes(n)) missing.push(n);
+      const coverPossible=missing.length<=30;
+      box.classList.remove('hidden');
+      box.innerHTML=`
+        <h4 class="font-black text-sm text-slate-700 mb-2 flex items-center gap-1.5"><i class="fa-solid fa-chart-pie text-indigo-500"></i> 입력 분석</h4>
+        <div class="grid grid-cols-3 gap-2 text-center mb-3">
+          <div class="bg-slate-50 rounded-xl p-2"><div class="text-[11px] text-slate-400">입력칸</div><div class="font-black text-slate-700">${nums.length}/30</div></div>
+          <div class="bg-slate-50 rounded-xl p-2"><div class="text-[11px] text-slate-400">고유번호</div><div class="font-black text-slate-700">${unique.length}개</div></div>
+          <div class="${coverPossible?'bg-emerald-50':'bg-amber-50'} rounded-xl p-2"><div class="text-[11px] ${coverPossible?'text-emerald-500':'text-amber-500'}">전체커버</div><div class="font-black ${coverPossible?'text-emerald-700':'text-amber-700'}">${coverPossible?'가능':'일부'}</div></div>
+        </div>
+        <div class="text-[12px] leading-relaxed text-slate-500"><b>자동에서 빠진 번호 ${missing.length}개:</b><br>${missing.map(n=>`<span class="mini-ball">${pad2(n)}</span>`).join('')}</div>`;
     }
 
-    function parsePastedLottoRows(text){
-      const normalized=normalizeOcrTextForParse(text);
-      const rawLines=normalized.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
-      const rows=[null,null,null,null,null];
-      const rowMap={A:0,B:1,C:2,D:3,E:4};
-
-      // 1순위: A/B/C/D/E가 붙은 줄. 앞에 번호표시(1. A / - A / A:)가 있어도 인식.
-      for(const line of rawLines){
-        const m=line.match(/^\s*(?:[-*•]\s*)?(?:\d+[\).\-:]\s*)?([A-E])(?:\s|[.:)\-]|$)/i);
-        if(!m) continue;
-        const label=m[1].toUpperCase();
-        const idx=rowMap[label];
-        const afterLabel=line.slice(m[0].length); // A/B/C/D/E 앞쪽의 1. 같은 숫자는 버림
-        const nums=extractLottoNumsFromText(afterLabel);
-        const six=findBestSix(nums);
-        if(six) rows[idx]=six;
+    function weightedSampleWithoutReplacement(pool, count, weightFn){
+      const arr=[...pool], picked=[];
+      while(picked.length<count && arr.length){
+        const weights=arr.map(weightFn); const total=weights.reduce((a,b)=>a+b,0);
+        let r=Math.random()*total, idx=0;
+        for(;idx<arr.length;idx++){r-=weights[idx]; if(r<=0) break;}
+        picked.push(arr.splice(Math.min(idx,arr.length-1),1)[0]);
       }
-      if(rows.every(isValidLottoRow)) return rows;
-
-      // 2순위: 줄마다 6개 번호만 있는 경우. 예: 09 15 24 33 39 41
-      const lineRows=[];
-      for(const line of rawLines){
-        const nums=extractLottoNumsFromText(line);
-        const six=findBestSix(nums);
-        if(six) lineRows.push(six);
-      }
-      if(lineRows.length>=5) return lineRows.slice(0,5);
-
-      // 3순위: 괄호 안이든 한 줄이든 전체에서 숫자 30개를 순서대로 사용.
-      const all=extractLottoNumsFromText(normalized);
-      const thirty=findBestThirty(all);
-      if(thirty) return thirty;
-      return null;
+      return picked;
     }
 
-    function applyPastedNumbers(btn){
-      const modal=btn.closest('.fixed');
-      const text=modal.querySelector('#pasteLottoText').value;
-      const rows=parsePastedLottoRows(text);
-      if(!rows){
-        showCustomToast("A~E 5줄, 각 줄 6개 번호 형식으로 붙여넣어 주세요.");
-        return;
+    function longestConsecutiveRun(row){
+      const a=[...row].sort((x,y)=>x-y); let best=1, cur=1;
+      for(let i=1;i<a.length;i++){ if(a[i]===a[i-1]+1){cur++;best=Math.max(best,cur)} else cur=1; }
+      return best;
+    }
+    function rowAnalysis(row){
+      const odd=row.filter(n=>n%2).length, even=6-odd;
+      const sum=row.reduce((a,b)=>a+b,0);
+      const zones=[row.filter(n=>n<=15).length,row.filter(n=>n>=16&&n<=30).length,row.filter(n=>n>=31).length];
+      const run=longestConsecutiveRun(row);
+      return {odd,even,sum,zones,run};
+    }
+    function scoreRow(row){
+      const a=rowAnalysis(row); let score=100;
+      if(a.run===2) score-=8; else if(a.run===3) score-=35; else if(a.run>=4) score-=80;
+      const oddDiff=Math.abs(a.odd-a.even); if(oddDiff===4) score-=12; else if(oddDiff===6) score-=35;
+      const zeroZones=a.zones.filter(v=>v===0).length; score-=zeroZones*18;
+      const maxZone=Math.max(...a.zones); if(maxZone>=5) score-=20; else if(maxZone===4) score-=8;
+      score-=Math.min(35, Math.abs(a.sum-138)*0.45);
+      const endCount={}; row.forEach(n=>{const e=n%10;endCount[e]=(endCount[e]||0)+1});
+      const maxEnd=Math.max(...Object.values(endCount)); if(maxEnd>=3) score-=12;
+      return score;
+    }
+    function overlapCount(a,b){const s=new Set(a); return b.filter(n=>s.has(n)).length;}
+    function scoreCandidate(rows, autoRows, requiredMissing){
+      let score=0; rows.forEach(r=>score+=scoreRow(r));
+      const flat=rows.flat(); const set=new Set(flat);
+      // 보완 대상 번호가 빠지면 강한 감점
+      requiredMissing.forEach(n=>{if(!set.has(n)) score-=200});
+      // 자동 각 줄과 너무 비슷하면 감점
+      for(const r of rows){ for(const ar of autoRows){ const ov=overlapCount(r,ar); if(ov>=4) score-=45; else if(ov===3) score-=14; }}
+      // 보완 줄끼리 너무 비슷한 경우. 현재는 전체 30개를 유니크로 구성하므로 거의 0이지만 안전장치.
+      for(let i=0;i<rows.length;i++) for(let j=i+1;j<rows.length;j++){const ov=overlapCount(rows[i],rows[j]); if(ov>=3) score-=30;}
+      // 전체 구간 분포
+      const zones=[flat.filter(n=>n<=15).length,flat.filter(n=>n>=16&&n<=30).length,flat.filter(n=>n>=31).length];
+      score-=Math.max(...zones)-Math.min(...zones);
+      return score;
+    }
+    function buildCandidate(freq, autoRows){
+      const uniqueAuto=[]; for(let n=1;n<=45;n++) if(freq[n]>0) uniqueAuto.push(n);
+      const missing=[]; for(let n=1;n<=45;n++) if(freq[n]===0) missing.push(n);
+      let requiredMissing=[...missing];
+      let chosen=[];
+      if(missing.length>30){
+        chosen=shuffle(missing).slice(0,30);
+        requiredMissing=[...chosen];
+      }else{
+        chosen=[...missing];
+        const fillNeed=30-chosen.length;
+        if(fillNeed>0){
+          const reusePool=[]; for(let n=1;n<=45;n++) if(!chosen.includes(n)) reusePool.push(n);
+          const fillers=weightedSampleWithoutReplacement(reusePool, fillNeed, n=>1/Math.pow(freq[n]+0.65,2));
+          chosen=chosen.concat(fillers);
+        }
       }
-      fillInputsFromRows(rows);
-      modal.remove();
-      showResultConfirm(rows,30);
-      showCustomToast("붙여넣은 번호를 입력했습니다.");
+      let bestRows=null, bestScore=-Infinity;
+      // 같은 30개라도 줄 배치에 따라 점수가 크게 달라서 후보 안에서 여러 번 섞음
+      for(let t=0;t<3;t++){
+        const arr=shuffle(chosen);
+        const rows=[];
+        for(let r=0;r<5;r++) rows.push(arr.slice(r*6,r*6+6).sort((a,b)=>a-b));
+        const sc=scoreCandidate(rows, autoRows, requiredMissing);
+        if(sc>bestScore){bestScore=sc; bestRows=rows;}
+      }
+      return {rows:bestRows, score:bestScore, requiredMissing};
+    }
+
+    function generateBalancedComplement(){
+      const nums=getInputs();
+      if(nums.length<6){showCustomModal('입력 필요','자동 5게임 번호를 먼저 붙여넣어 주세요. 최소 6개 이상 입력되어야 조합을 만들 수 있습니다.');return;}
+      const freq=getFreq(nums), autoRows=getInputRows();
+      const missing=[]; for(let n=1;n<=45;n++) if(freq[n]===0) missing.push(n);
+      let best=null;
+      const iterations=3500;
+      for(let i=0;i<iterations;i++){
+        const cand=buildCandidate(freq, autoRows);
+        if(!best || cand.score>best.score) best=cand;
+      }
+      renderResults(best.rows, nums, freq, missing, best.requiredMissing);
+    }
+
+    function renderResults(rows, inputNums, freq, originalMissing, requiredMissing){
+      const resultBox=document.getElementById('resultBox'); resultBox.innerHTML='';
+      const manualFlat=rows.flat();
+      const autoUnique=uniq(inputNums);
+      const totalCover=new Set([...autoUnique,...manualFlat]);
+      const stillMissing=[]; for(let n=1;n<=45;n++) if(!totalCover.has(n)) stillMissing.push(n);
+      const reused=manualFlat.filter(n=>freq[n]>0);
+      const impossible=originalMissing.length>30;
+      const summary=document.createElement('div');
+      summary.className='bg-white rounded-2xl p-4 shadow-sm border border-slate-100';
+      summary.innerHTML=`
+        <div class="flex items-center justify-between mb-3">
+          <h4 class="font-black text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-emerald-500"></i> 보완 결과</h4>
+          <span class="text-[11px] font-bold px-2 py-1 rounded-full ${stillMissing.length===0?'bg-emerald-100 text-emerald-700':'bg-amber-100 text-amber-700'}">전체커버 ${totalCover.size}/45</span>
+        </div>
+        <div class="grid grid-cols-3 gap-2 text-center mb-3">
+          <div class="bg-slate-50 rounded-xl p-2"><div class="text-[11px] text-slate-400">자동 고유</div><div class="font-black">${autoUnique.length}</div></div>
+          <div class="bg-slate-50 rounded-xl p-2"><div class="text-[11px] text-slate-400">자동 미출현</div><div class="font-black">${originalMissing.length}</div></div>
+          <div class="bg-slate-50 rounded-xl p-2"><div class="text-[11px] text-slate-400">재사용</div><div class="font-black">${reused.length}</div></div>
+        </div>
+        <p class="text-[12px] text-slate-500 leading-relaxed">
+          ${impossible?'자동번호 중복이 많아 빠진 번호가 30개를 초과했습니다. 보완 5게임 안에 가능한 만큼 우선 반영했습니다.':'자동에서 빠진 번호를 보완 5게임에 우선 반영했습니다.'}
+          ${stillMissing.length===0?'<b class="text-emerald-700">자동+보완 10게임 안에 1~45 전체 번호가 포함됩니다.</b>':`<b class="text-amber-700">아직 미포함 번호: ${stillMissing.map(pad2).join(', ')}</b>`}
+        </p>`;
+      resultBox.appendChild(summary);
+
+      const letters=['A','B','C','D','E'];
+      rows.forEach((group,g)=>{
+        const div=document.createElement('div');
+        div.className='bg-white p-3 rounded-2xl shadow-sm border border-slate-100';
+        const analysis=rowAnalysis(group);
+        const runText=analysis.run>=3?`${analysis.run}연속 주의`:(analysis.run===2?'2연속 포함':'연속 없음');
+        div.innerHTML=`
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-sm font-black text-slate-400 bg-slate-50 w-7 h-7 rounded-lg flex items-center justify-center border border-slate-100">${letters[g]}</span>
+            <div class="flex gap-1.5 flex-wrap justify-end">${group.map((n,i)=>`<span class="lotto-ball ${getBallColorClass(n)}" style="animation-delay:${i*0.06}s">${pad2(n)}</span>`).join('')}</div>
+          </div>
+          <div class="mt-3 text-[11px] text-slate-500 bg-slate-50 rounded-xl px-3 py-2">
+            홀짝 ${analysis.odd}:${analysis.even} · 합계 ${analysis.sum} · 구간 ${analysis.zones.join('-')} · ${runText}
+          </div>`;
+        resultBox.appendChild(div);
+      });
     }
 
     function showCustomModal(title, html){
-      const modal=document.createElement("div");modal.className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-6 z-50";
-      modal.innerHTML=`<div class="bg-white rounded-2xl max-w-sm w-full p-5 text-center shadow-2xl"><h3 class="font-bold text-lg text-slate-900 mb-3">${title}</h3><div class="text-xs text-slate-500 leading-relaxed mb-4 text-left">${html}</div><button onclick="this.parentElement.parentElement.remove()" class="w-full bg-indigo-600 text-white font-bold py-2.5 rounded-xl hover:bg-indigo-700 transition-all">확인</button></div>`;
+      const modal=document.createElement('div');
+      modal.className='fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-6 z-50';
+      modal.innerHTML=`<div class="bg-white rounded-2xl max-w-sm w-full p-5 text-center shadow-2xl"><h3 class="font-bold text-lg text-slate-900 mb-2">${title}</h3><div class="text-xs text-slate-500 leading-relaxed mb-4 text-left">${html}</div><button onclick="this.closest('.fixed').remove()" class="w-full bg-indigo-600 text-white font-bold py-2.5 rounded-xl hover:bg-indigo-700 transition-all">확인</button></div>`;
       document.body.appendChild(modal);
     }
-    function showCustomToast(message){const toast=document.createElement("div");toast.className="fixed bottom-12 left-1/2 -translate-x-1/2 bg-slate-900/90 text-white text-[12px] font-semibold px-4 py-3 rounded-full shadow-lg z-50 flex items-center gap-1.5";toast.innerHTML=`<i class="fa-solid fa-circle-check text-green-400"></i> ${message}`;document.body.appendChild(toast);setTimeout(()=>toast.remove(),2500)}
-    async function generateLotto(){const inputs=document.querySelectorAll("input[type='number']");let excluded=[];inputs.forEach(input=>{const v=parseInt(input.value);if(!isNaN(v)&&v>=1&&v<=45)excluded.push(v)});excluded=[...new Set(excluded)];let pool=[];for(let i=1;i<=45;i++)if(!excluded.includes(i))pool.push(i);const resultBox=document.getElementById("resultBox");resultBox.innerHTML="";if(pool.length<6){resultBox.innerHTML=`<div class="bg-red-50 border border-red-200 text-red-700 p-4 rounded-2xl flex items-start gap-2"><i class="fa-solid fa-triangle-exclamation mt-1"></i><div><h5 class="font-bold text-sm">조합 불가</h5><p class="text-xs text-red-600/90 mt-1">사용 가능한 번호(${pool.length}개)가 너무 적어 6개 숫자의 로또 조합을 구성할 수 없습니다.</p></div></div>`;return}for(let g=0;g<5;g++){let group=[],poolCopy=[...pool];while(group.length<6&&poolCopy.length>0){const idx=Math.floor(Math.random()*poolCopy.length),num=poolCopy.splice(idx,1)[0];if(!group.includes(num)&&!isConsecutive(group,num))group.push(num)}if(group.length<6){poolCopy=[...pool].filter(n=>!group.includes(n));while(group.length<6&&poolCopy.length>0){const idx=Math.floor(Math.random()*poolCopy.length);group.push(poolCopy.splice(idx,1)[0])}}group.sort((a,b)=>a-b);const div=document.createElement("div");div.className="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between";const label=document.createElement("span");label.className="text-sm font-black text-slate-400 bg-slate-50 w-6 h-6 rounded-lg flex items-center justify-center border border-slate-100";label.textContent=["A","B","C","D","E"][g];div.appendChild(label);const balls=document.createElement("div");balls.className="flex gap-1.5";group.forEach((n,i)=>{const ball=document.createElement("span");ball.className=`lotto-ball ${getBallColorClass(n)}`;ball.style.animationDelay=`${i*.12}s`;ball.textContent=String(n).padStart(2,"0");balls.appendChild(ball)});div.appendChild(balls);resultBox.appendChild(div);await delay(450)}}
-    function isConsecutive(group,n){return group.some(x=>Math.abs(x-n)===1)}
-    function delay(ms){return new Promise(r=>setTimeout(r,ms))}
+    function showCustomToast(message){
+      const toast=document.createElement('div');
+      toast.className='fixed bottom-12 left-1/2 -translate-x-1/2 bg-slate-900/90 text-white text-[12px] font-semibold px-4 py-3 rounded-full shadow-lg z-50 flex items-center gap-1.5';
+      toast.innerHTML=`<i class="fa-solid fa-circle-check text-green-400"></i> ${message}`;
+      document.body.appendChild(toast); setTimeout(()=>toast.remove(),2500);
+    }
+    updateInputSummary();
   </script>
 </body>
 </html>
