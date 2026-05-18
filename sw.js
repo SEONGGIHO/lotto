@@ -1,4 +1,4 @@
-const CACHE_NAME = 'lotto-pwa-v5-fixed-capture';
+const CACHE_NAME = 'lotto-pwa-v8';
 const ASSETS = ['./','./index.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png'];
 self.addEventListener('install', e => {
   self.skipWaiting();
