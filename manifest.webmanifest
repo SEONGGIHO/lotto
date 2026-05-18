@@ -1,13 +1,12 @@
 {
   "name": "스마트 로또 조합기 PRO",
   "short_name": "로또조합기",
-  "description": "사진 OCR로 제외 번호를 입력하고 로또 번호 조합을 생성하는 앱",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#f3f4f6",
+  "background_color": "#f8fafc",
   "theme_color": "#4f46e5",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "icons/icon-192.png",

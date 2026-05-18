@@ -7,548 +7,178 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#4f46e5">
-  <!-- PWA 설정: 홈화면 추가 시 주소창 없는 앱처럼 실행 -->
-  <meta name="application-name" content="로또 조합기">
-  <meta name="apple-mobile-web-app-title" content="로또 조합기">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="mobile-web-app-capable" content="yes">
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="apple-touch-icon" href="icons/icon-192.png">
-
-  
+  <link rel="manifest" href="./manifest.webmanifest">
   <title>스마트 로또 조합기 PRO</title>
-  
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-
   <style>
-    body {
-      background-color: #f3f4f6;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      padding-bottom: 120px;
-      -webkit-tap-highlight-color: transparent;
-    }
-    
-    /* 입체감 있는 실제 로또 공 색상 스타일링 */
-    .ball-1-10 { background: radial-gradient(circle at 30% 30%, #fef08a, #eab308); color: #1e293b; text-shadow: 0 1px 1px rgba(255,255,255,0.5); }
-    .ball-11-20 { background: radial-gradient(circle at 30% 30%, #bfdbfe, #2563eb); color: #ffffff; }
-    .ball-21-30 { background: radial-gradient(circle at 30% 30%, #fecaca, #dc2626); color: #ffffff; }
-    .ball-31-40 { background: radial-gradient(circle at 30% 30%, #e2e8f0, #475569); color: #ffffff; }
-    .ball-41-45 { background: radial-gradient(circle at 30% 30%, #bbf7d0, #16a34a); color: #ffffff; }
-
-    /* 탄력 있는 공 팝업 애니메이션 */
-    .lotto-ball {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      font-weight: 800;
-      font-size: 17px;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.15), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
-      animation: ballPop 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-      opacity: 0;
-      transform: scale(0.3) rotate(-180deg);
-    }
-    @keyframes ballPop {
-      to { opacity: 1; transform: scale(1) rotate(0deg); }
-    }
-
-    /* 홈화면에서 실행된 PWA 모드 보정 */
-    @media (display-mode: standalone) {
-      body { padding-top: env(safe-area-inset-top); }
-      header { padding-top: calc(1rem + env(safe-area-inset-top)); }
-    }
-
+    body{background-color:#f3f4f6;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;padding-bottom:120px;-webkit-tap-highlight-color:transparent}
+    .ball-1-10{background:radial-gradient(circle at 30% 30%,#fef08a,#eab308);color:#1e293b;text-shadow:0 1px 1px rgba(255,255,255,.5)}
+    .ball-11-20{background:radial-gradient(circle at 30% 30%,#bfdbfe,#2563eb);color:#fff}
+    .ball-21-30{background:radial-gradient(circle at 30% 30%,#fecaca,#dc2626);color:#fff}
+    .ball-31-40{background:radial-gradient(circle at 30% 30%,#e2e8f0,#475569);color:#fff}
+    .ball-41-45{background:radial-gradient(circle at 30% 30%,#bbf7d0,#16a34a);color:#fff}
+    .lotto-ball{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:50%;font-weight:800;font-size:17px;box-shadow:0 4px 6px -1px rgba(0,0,0,.15),0 2px 4px -1px rgba(0,0,0,.1);animation:ballPop .45s cubic-bezier(.175,.885,.32,1.275) forwards;opacity:0;transform:scale(.3) rotate(-180deg)}
+    @keyframes ballPop{to{opacity:1;transform:scale(1) rotate(0deg)}}
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 select-none">
-
   <header class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-4 px-4 sticky top-0 z-10 shadow-md safe-top">
     <div class="max-w-md mx-auto flex justify-between items-center">
-      <h1 class="text-lg font-black tracking-tight flex items-center gap-2">
-        <i class="fa-solid fa-dice-d20 text-yellow-300"></i>
-        스마트 로또 조합기 PRO
-      </h1>
-      <button onclick="resetAll()" class="text-xs bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-full transition-all">
-        <i class="fa-solid fa-rotate-left"></i> 전체 초기화
-      </button>
+      <h1 class="text-lg font-black tracking-tight flex items-center gap-2"><i class="fa-solid fa-dice-d20 text-yellow-300"></i>스마트 로또 조합기 PRO</h1>
+      <button onclick="resetAll()" class="text-xs bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-full transition-all"><i class="fa-solid fa-rotate-left"></i> 전체 초기화</button>
     </div>
   </header>
-
   <main class="max-w-md mx-auto px-4 mt-4">
-
     <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 mb-4">
       <div class="flex justify-between items-center mb-3">
-        <h3 class="text-sm font-bold text-slate-500 flex items-center gap-1.5">
-          <i class="fa-solid fa-ban text-red-500"></i> 제외할 번호 입력 (6열 5행)
-        </h3>
-        
+        <h3 class="text-sm font-bold text-slate-500 flex items-center gap-1.5"><i class="fa-solid fa-ban text-red-500"></i> 제외할 번호 입력 (6열 5행)</h3>
         <label for="cameraInput" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-all shadow-md shadow-indigo-100">
-          <i class="fa-solid fa-camera"></i> 사진 찍어 자동 입력
+          <i class="fa-solid fa-camera"></i> 번호표만 촬영
         </label>
-        <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden" onchange="processOcrWithFilter(this)">
+        <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden" onchange="processOcrFixedTicket(this)">
       </div>
-
+      <div class="bg-amber-50 border border-amber-200 text-amber-800 text-[12px] leading-relaxed rounded-xl p-3 mb-3">
+        <b>촬영 기준 고정:</b> 로또 용지를 접거나 가까이 대서 <b>A~E 번호표 5줄만</b> 가로로 찍어주세요. QR·날짜·금액·바코드는 나오지 않게 찍는 방식이 가장 안정적입니다.
+      </div>
       <div class="grid grid-cols-6 gap-2" id="inputGrid"></div>
-      
       <div class="flex justify-between items-center mt-3">
-        <p class="text-[11px] text-slate-400">
-          * 직접 기입하거나 우측 상단 <b>카메라 버튼</b>을 이용하세요.
-        </p>
-        <button onclick="clearInputsOnly()" class="text-[11px] font-bold text-indigo-600 hover:underline">
-          입력창만 비우기
-        </button>
+        <p class="text-[11px] text-slate-400">* 자동입력 후 틀린 칸만 직접 수정하세요.</p>
+        <button onclick="clearInputsOnly()" class="text-[11px] font-bold text-indigo-600 hover:underline">입력창만 비우기</button>
       </div>
     </div>
-
     <div class="text-center my-4">
       <button onclick="generateLotto()" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-3.5 px-6 rounded-2xl font-bold text-lg shadow-lg shadow-indigo-100 active:scale-[0.97] transition-all flex items-center justify-center gap-2">
         <i class="fa-solid fa-wand-magic-sparkles"></i> 대박 기원 조합 생성하기
       </button>
     </div>
-
     <div id="resultBox" class="space-y-3">
       <div id="emptyState" class="bg-white rounded-2xl p-8 text-center border-2 border-dashed border-slate-200">
-        <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3">
-          <i class="fa-solid fa-dice text-slate-300 text-3xl"></i>
-        </div>
+        <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3"><i class="fa-solid fa-dice text-slate-300 text-3xl"></i></div>
         <p class="text-sm text-slate-400 font-medium">제외할 번호를 지정한 뒤<br>'조합 생성하기' 버튼을 눌러주세요!</p>
       </div>
     </div>
-
   </main>
-
   <div id="loadingOverlay" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-xs z-50 flex flex-col items-center justify-center text-white px-6 text-center">
     <div class="bg-white text-slate-800 p-6 rounded-3xl shadow-2xl max-w-xs w-full flex flex-col items-center">
       <div class="animate-spin rounded-full h-12 w-12 border-4 border-indigo-600 border-t-transparent mb-4"></div>
-      <h4 class="font-bold text-lg text-slate-900 mb-1" id="loadingTitle">사진 분석 중...</h4>
-      <p class="text-xs text-slate-500 mb-4 leading-relaxed" id="ocrProgress">고화질 필터 보정 및 인식 가동 중입니다.</p>
-      <div class="w-full bg-slate-100 rounded-full h-2">
-        <div id="ocrProgressBar" class="bg-indigo-600 h-2 rounded-full transition-all duration-300" style="width: 10%"></div>
-      </div>
+      <h4 class="font-bold text-lg text-slate-900 mb-1" id="loadingTitle">번호표 분석 중...</h4>
+      <p class="text-xs text-slate-500 mb-4 leading-relaxed" id="ocrProgress">A~E 번호줄을 빠르게 읽고 있습니다.</p>
+      <div class="w-full bg-slate-100 rounded-full h-2"><div id="ocrProgressBar" class="bg-indigo-600 h-2 rounded-full transition-all duration-300" style="width:10%"></div></div>
     </div>
   </div>
-
   <canvas id="hiddenCanvas" class="hidden"></canvas>
-
   <script>
-
-    // PWA 등록: GitHub Pages에서 홈화면 추가 시 독립 실행 앱 모드 지원
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(err => {
-          console.log('Service worker registration failed:', err);
-        });
+    if ('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+    const grid=document.getElementById("inputGrid");
+    for(let i=0;i<30;i++){const input=document.createElement("input");input.type="number";input.inputMode="numeric";input.min=1;input.max=45;input.placeholder="-";input.className="w-full text-center py-2.5 font-bold text-slate-700 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all";grid.appendChild(input);}
+    function getBallColorClass(n){if(n<=10)return"ball-1-10";if(n<=20)return"ball-11-20";if(n<=30)return"ball-21-30";if(n<=40)return"ball-31-40";return"ball-41-45"}
+    function clearInputsOnly(){document.querySelectorAll("input[type='number']").forEach(i=>{i.value="";i.classList.remove("border-green-500","bg-green-50","border-orange-400","bg-orange-50")});showCustomToast("입력 슬롯이 초기화되었습니다.")}
+    function resetAll(){clearInputsOnly();document.getElementById("resultBox").innerHTML=`<div id="emptyState" class="bg-white rounded-2xl p-8 text-center border-2 border-dashed border-slate-200"><div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3"><i class="fa-solid fa-dice text-slate-300 text-3xl"></i></div><p class="text-sm text-slate-400 font-medium">제외할 번호를 지정한 뒤<br>'조합 생성하기' 버튼을 눌러주세요!</p></div>`}
+    function loadImage(file){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=e=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=reject;img.src=e.target.result};r.onerror=reject;r.readAsDataURL(file)})}
+    function normalizeTicketImage(img){
+      const canvas=document.getElementById("hiddenCanvas"), ctx=canvas.getContext("2d",{willReadFrequently:true});
+      const iw=img.naturalWidth||img.width, ih=img.naturalHeight||img.height, ratio=iw/ih;
+      // 최종 촬영 기준은 번호표만 가로 촬영. 그래도 세로 전체 용지를 넣으면 가운데 표만 대략 컷.
+      let sx=0, sy=0, sw=iw, sh=ih;
+      if(ratio<1.4){sx=iw*0.04; sy=ih*0.48; sw=iw*0.88; sh=ih*0.22;}
+      else {sx=iw*0.02; sy=ih*0.03; sw=iw*0.94; sh=ih*0.90;}
+      const targetW=1200, targetH=Math.max(220, Math.round(targetW*(sh/sw)));
+      canvas.width=targetW; canvas.height=targetH;
+      ctx.fillStyle="white"; ctx.fillRect(0,0,targetW,targetH);
+      ctx.drawImage(img,sx,sy,sw,sh,0,0,targetW,targetH);
+      // 흑백+대비. 너무 강한 이진화는 44를 4로 깨뜨릴 수 있어 부드러운 그레이 보정 사용.
+      const d=ctx.getImageData(0,0,targetW,targetH), a=d.data;
+      for(let i=0;i<a.length;i+=4){
+        let g=0.299*a[i]+0.587*a[i+1]+0.114*a[i+2];
+        g=(g-128)*1.55+128; g=Math.max(0,Math.min(255,g));
+        if(g<75)g=0; else if(g>210)g=255;
+        a[i]=a[i+1]=a[i+2]=g;
+      }
+      ctx.putImageData(d,0,0);
+      return canvas;
+    }
+    function cropRowCanvas(source,rowIndex){
+      const out=document.createElement("canvas"), ctx=out.getContext("2d");
+      // 왼쪽 A/수동 영역을 버리고 숫자 6개 영역만 읽음
+      const sx=source.width*0.25, sw=source.width*0.70;
+      const top=source.height*0.04, usable=source.height*0.88;
+      const rowH=usable/5;
+      const sy=top + rowIndex*rowH - rowH*0.10;
+      out.width=1000; out.height=115;
+      ctx.fillStyle="white"; ctx.fillRect(0,0,out.width,out.height);
+      ctx.drawImage(source,sx,Math.max(0,sy),sw,Math.min(source.height-sy,rowH*1.22),0,0,out.width,out.height);
+      return out;
+    }
+    function parseLottoRow(text){
+      let cleaned=(text||"").replace(/[Oo]/g,"0").replace(/[Il|]/g,"1").replace(/[^\d\s]/g," ");
+      let nums=[];
+      cleaned.split(/\s+/).filter(Boolean).forEach(t=>{
+        if(t.length<=2){let n=parseInt(t,10); if(n>=1&&n<=45) nums.push(n);}
+        else{
+          for(let i=0;i+1<t.length;i+=2){let n=parseInt(t.slice(i,i+2),10); if(n>=1&&n<=45) nums.push(n);}
+        }
       });
+      const digits=cleaned.replace(/\D/g,"");
+      let byPairs=[];
+      for(let i=0;i+1<digits.length;i+=2){let n=parseInt(digits.slice(i,i+2),10); if(n>=1&&n<=45) byPairs.push(n);}
+      if(byPairs.length>=nums.length) nums=byPairs;
+      // 한 줄은 6개, 중복은 실제 로또 용지에서도 가능하므로 제거하지 않음.
+      return nums.slice(0,6);
     }
-
-    // 앱 모드로 실행 중인지 확인하는 보조 함수
-    function isStandaloneAppMode() {
-      return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-    }
-
-    const grid = document.getElementById("inputGrid");
-    
-    // 6x5 인풋 격자 엔진 빌드
-    for (let i = 0; i < 30; i++) {
-      const input = document.createElement("input");
-      input.type = "number";
-      input.inputMode = "numeric";
-      input.min = 1;
-      input.max = 45;
-      input.placeholder = "-";
-      input.className = "w-full text-center py-2.5 font-bold text-slate-700 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all";
-      grid.appendChild(input);
-    }
-
-    function getBallColorClass(number) {
-      if (number <= 10) return "ball-1-10";
-      if (number <= 20) return "ball-11-20";
-      if (number <= 30) return "ball-21-30";
-      if (number <= 40) return "ball-31-40";
-      return "ball-41-45";
-    }
-
-    function clearInputsOnly() {
-      const inputs = document.querySelectorAll("input[type='number']");
-      inputs.forEach(input => {
-        input.value = "";
-        input.classList.remove("border-green-500", "bg-green-50");
-      });
-      showCustomToast("입력 슬롯이 초기화되었습니다.");
-    }
-
-    function resetAll() {
-      clearInputsOnly();
-      document.getElementById("resultBox").innerHTML = `
-        <div id="emptyState" class="bg-white rounded-2xl p-8 text-center border-2 border-dashed border-slate-200">
-          <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3">
-            <i class="fa-solid fa-dice text-slate-300 text-3xl"></i>
-          </div>
-          <p class="text-sm text-slate-400 font-medium">제외할 번호를 지정한 뒤<br>'조합 생성하기' 버튼을 눌러주세요!</p>
-        </div>
-      `;
-    }
-
-    // ✅ v3 수정판: 번호표 전용 초고속 OCR + 정확도 우선 파싱
-    // 핵심 변경점
-    // 1) 카메라 원본 전체를 2.5배 확대하지 않음: 모바일에서 매우 느려지거나 멈출 수 있음
-    // 2) 로또 용지의 A~E 번호표 영역만 먼저 잘라서 OCR
-    // 3) OCR이 100% 이후 종료 처리에서 멈추지 않도록 terminate를 기다리지 않음
-    // 4) 45초 타임아웃을 걸어 무한 대기 방지
-    function preprocessImage(imgElement, mode = "ticketRows") {
-      const canvas = document.getElementById("hiddenCanvas");
-      const ctx = canvas.getContext("2d", { willReadFrequently: true });
-
-      const srcW = imgElement.naturalWidth || imgElement.width;
-      const srcH = imgElement.naturalHeight || imgElement.height;
-
-      let cropX = 0;
-      let cropY = 0;
-      let cropW = srcW;
-      let cropH = srcH;
-
-      if (mode === "ticketRows") {
-        // 로또 용지를 세로로 촬영했을 때 A~E 번호 줄이 있는 중하단 영역
-        // 날짜/회차/QR/바코드를 최대한 제외해서 오인식과 속도 문제를 줄임
-        cropX = Math.round(srcW * 0.02);
-        // 일반 로또 용지 전체를 찍으면 A~E 번호표는 사진 높이의 대략 50~72% 구간에 위치함
-        // 날짜/QR/금액/바코드 숫자를 최대한 제외해야 오인식이 크게 줄어듦
-        cropY = Math.round(srcH * 0.50);
-        cropW = Math.round(srcW * 0.88);
-        cropH = Math.round(srcH * 0.23);
-      }
-
-      // OCR 입력 크기 제한: 너무 큰 원본 사진은 휴대폰 브라우저에서 100% 이후 멈출 수 있음
-      const targetW = Math.min(1100, Math.max(720, Math.round(cropW * 1.65)));
-      const scale = targetW / cropW;
-      const targetH = Math.round(cropH * scale);
-
-      canvas.width = targetW;
-      canvas.height = targetH;
-
-      ctx.fillStyle = "white";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = "medium";
-      ctx.drawImage(imgElement, cropX, cropY, cropW, cropH, 0, 0, targetW, targetH);
-
-      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const data = imgData.data;
-
-      let sum = 0;
-      const gray = new Uint8ClampedArray(data.length / 4);
-      for (let i = 0, j = 0; i < data.length; i += 4, j++) {
-        let g = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
-        // 밝은 빨간/분홍 배경선은 글자로 오인식되지 않도록 약하게 날림
-        const r = data[i], b = data[i + 2];
-        if (r > 170 && b > 130 && g > 120) g = 245;
-        gray[j] = g;
-        sum += g;
-      }
-
-      const avg = sum / gray.length;
-      const threshold = Math.max(105, Math.min(190, avg * 0.82));
-
-      for (let i = 0, j = 0; i < data.length; i += 4, j++) {
-        let v = (gray[j] - 128) * 1.9 + 128;
-        v = v < threshold ? 0 : 255;
-        data[i] = data[i + 1] = data[i + 2] = v;
-      }
-
-      ctx.putImageData(imgData, 0, 0);
-      return canvas.toDataURL("image/png");
-    }
-
-    function normalizeOcrMistakes(text) {
-      return text
-        .replace(/[Oo]/g, "0")
-        .replace(/[Il|]/g, "1")
-        .replace(/[Ss]/g, "5")
-        .replace(/[Bb]/g, "8");
-    }
-
-    function parseLottoNumbersFromText(rawText) {
-      const text = normalizeOcrMistakes(rawText)
-        .replace(/[，,.:;_\-]+/g, " ")
-        .replace(/[^ABCDE0-9\n\s]/g, " ");
-
-      const rawLines = text
-        .split(/\n+/)
-        .map(line => line.replace(/\s+/g, " ").trim())
-        .filter(Boolean);
-
-      const rows = [];
-
-      for (const line of rawLines) {
-        // A/B/C/D/E 행 문자 뒤쪽 숫자만 우선 사용
-        const line2 = line.replace(/^[^ABCDE]*/, "");
-        const hasRowMark = /^[ABCDE]/.test(line2);
-        let numberPart = hasRowMark ? line2.slice(1) : line2;
-
-        let nums = numberPart
-          .replace(/[^0-9\s]/g, " ")
-          .split(/\s+/)
-          .map(v => parseInt(v, 10))
-          .filter(n => Number.isInteger(n) && n >= 1 && n <= 45);
-
-        // 091524333941처럼 붙어서 읽힌 경우 2자리씩 분리
-        const compact = numberPart.replace(/\D/g, "");
-        if (nums.length < 6 && compact.length >= 12) {
-          const converted = [];
-          for (let i = 0; i + 1 < compact.length; i += 2) {
-            const n = parseInt(compact.slice(i, i + 2), 10);
-            if (n >= 1 && n <= 45) converted.push(n);
-          }
-          if (converted.length >= nums.length) nums = converted;
+    async function withTimeout(promise,ms){let timer;const timeout=new Promise((_,rej)=>timer=setTimeout(()=>rej(new Error("OCR_TIMEOUT")),ms));return Promise.race([promise,timeout]).finally(()=>clearTimeout(timer))}
+    async function processOcrFixedTicket(inputElement){
+      const file=inputElement.files[0]; if(!file) return;
+      const overlay=document.getElementById("loadingOverlay"), progress=document.getElementById("ocrProgress"), bar=document.getElementById("ocrProgressBar");
+      overlay.classList.remove("hidden"); progress.textContent="번호표 이미지를 준비 중입니다."; bar.style.width="15%";
+      let worker=null;
+      try{
+        const img=await loadImage(file);
+        const norm=normalizeTicketImage(img);
+        progress.textContent="A~E 5줄을 한 줄씩 읽는 중입니다."; bar.style.width="25%";
+        worker=await Tesseract.createWorker("eng",1,{logger:m=>{if(m.status==="recognizing text"){bar.style.width=(30+Math.round(m.progress*60))+"%";}}});
+        await worker.setParameters({tessedit_char_whitelist:"0123456789 ", tessedit_pageseg_mode:Tesseract.PSM.SINGLE_LINE});
+        const rows=[];
+        for(let r=0;r<5;r++){
+          const rowCanvas=cropRowCanvas(norm,r);
+          const res=await withTimeout(worker.recognize(rowCanvas),12000);
+          rows.push(parseLottoRow(res.data.text));
         }
-
-        // 로또 한 줄은 6개. 행 표시가 있으면 그 줄을 강하게 신뢰.
-        if (nums.length >= 6) {
-          rows.push(nums.slice(0, 6));
-        }
-      }
-
-      // A~E 5줄이 잡히면 정확히 30개 반환. 중복 제거하지 않음.
-      // 로또 제외 입력은 중복 제거해도 되지만, OCR 검증을 위해 일단 보이는 순서를 보존.
-      if (rows.length >= 3) {
-        return rows.slice(0, 5).flat();
-      }
-
-      // fallback: 줄 파싱 실패 시 전체 숫자에서 6개 단위 후보 사용
-      const allNums = text
-        .replace(/[^0-9\s]/g, " ")
-        .split(/\s+/)
-        .map(v => parseInt(v, 10))
-        .filter(n => Number.isInteger(n) && n >= 1 && n <= 45);
-
-      return allNums.slice(0, 30);
-    }
-
-    function withTimeout(promise, ms, message) {
-      return Promise.race([
-        promise,
-        new Promise((_, reject) => setTimeout(() => reject(new Error(message)), ms))
-      ]);
-    }
-
-    async function processOcrWithFilter(inputElement) {
-      const file = inputElement.files[0];
-      if (!file) return;
-
-      const overlay = document.getElementById("loadingOverlay");
-      const titleText = document.getElementById("loadingTitle");
-      const progressText = document.getElementById("ocrProgress");
-      const progressBar = document.getElementById("ocrProgressBar");
-
-      overlay.classList.remove("hidden");
-      titleText.textContent = "이미지 보정 중...";
-      progressText.textContent = "번호표 영역만 잘라내고 있습니다.";
-      progressBar.style.width = "15%";
-
-      let worker = null;
-      let modalTitle = "";
-      let modalText = "";
-
-      try {
-        const dataUrl = await new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = e => resolve(e.target.result);
-          reader.onerror = reject;
-          reader.readAsDataURL(file);
-        });
-
-        const img = await new Promise((resolve, reject) => {
-          const image = new Image();
-          image.onload = () => resolve(image);
-          image.onerror = reject;
-          image.src = dataUrl;
-        });
-
-        const filteredSrc = preprocessImage(img, "ticketRows");
-
-        titleText.textContent = "로또 번호 분석 중...";
-        progressText.textContent = "A~E 번호표 부분만 빠르게 OCR 분석 중입니다.";
-        progressBar.style.width = "35%";
-
-        worker = await withTimeout(
-          Tesseract.createWorker('eng', 1, {
-            logger: m => {
-              if (m.status === 'recognizing text') {
-                const percent = Math.round(m.progress * 100);
-                progressText.textContent = `정밀 판독 진행률: ${percent}%`;
-                progressBar.style.width = `${35 + (percent * 0.55)}%`;
-              }
-            }
-          }),
-          20000,
-          "OCR 엔진 시작 시간이 너무 오래 걸립니다."
-        );
-
-        await worker.setParameters({
-          tessedit_char_whitelist: 'ABCDE0123456789 ',
-          tessedit_pageseg_mode: Tesseract.PSM.SINGLE_BLOCK
-        });
-
-        const result = await withTimeout(
-          worker.recognize(filteredSrc),
-          45000,
-          "OCR 분석 시간이 너무 오래 걸립니다. 사진을 번호 부분만 더 크게 찍어 주세요."
-        );
-
-        progressText.textContent = "인식 결과 정리 중...";
-        progressBar.style.width = "98%";
-
-        const text = result.data.text || "";
-        const uniqueNumbers = parseLottoNumbersFromText(text);
-
-        if (uniqueNumbers.length > 0) {
-          const inputs = document.querySelectorAll("input[type='number']");
-          inputs.forEach(input => {
-            input.value = "";
-            input.classList.remove("border-green-500", "bg-green-50");
-          });
-
-          const fillCount = Math.min(uniqueNumbers.length, 30);
-          for (let i = 0; i < fillCount; i++) {
-            inputs[i].value = uniqueNumbers[i];
-            inputs[i].classList.add("border-green-500", "bg-green-50");
-          }
-
-          modalTitle = "인식 결과 확인";
-          modalText = `자동 인식된 번호: ${uniqueNumbers.slice(0, fillCount).join(', ')}<br><br>틀린 번호가 있으면 입력칸에서 바로 수정해 주세요.`;
-        } else {
-          modalTitle = "인식 재시도 안내";
-          modalText = "번호가 있는 A~E 줄 부분이 화면 가운데에 오도록 다시 촬영해 주세요. 날짜/QR/금액/바코드는 최대한 안 나오게 찍는 것이 좋습니다.";
-        }
-      } catch (err) {
-        console.error(err);
-        modalTitle = "OCR 처리 중단";
-        modalText = `${err.message || '처리 중 오류가 발생했습니다.'}<br><br>용지 전체가 아니라 A~E 번호표 부분만 크게 찍으면 훨씬 빠르고 안정적으로 됩니다.`;
-      } finally {
-        // 핵심: terminate가 일부 모바일 브라우저에서 오래 걸릴 수 있으므로 화면을 먼저 닫고, 백그라운드로 정리
+        const flat=rows.flat();
+        if(flat.length===0){showCustomModal("인식 실패","번호표만 가로로 크게 찍어주세요. A~E 5줄과 숫자 6개가 화면 안에 모두 들어와야 합니다.");return;}
+        fillInputsFromRows(rows);
+        const okRows=rows.filter(r=>r.length===6).length;
+        showResultConfirm(rows, okRows);
+      }catch(e){
+        console.error(e);
+        showCustomModal("인식 오류","사진 처리 중 문제가 생겼습니다. 번호표만 가로로 더 크게 찍어서 다시 시도해 주세요.");
+      }finally{
         overlay.classList.add("hidden");
-        inputElement.value = "";
-        if (worker) {
-          setTimeout(() => worker.terminate().catch(() => {}), 0);
-        }
+        inputElement.value="";
+        if(worker) worker.terminate().catch(()=>{});
       }
-
-      if (modalTitle) showCustomModal(modalTitle, modalText);
     }
-
-    function showCustomModal(title, text) {
-      const modal = document.createElement("div");
-      modal.className = "fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-6 z-50";
-      modal.innerHTML = `
-        <div class="bg-white rounded-2xl max-w-sm w-full p-5 text-center shadow-2xl">
-          <h3 class="font-bold text-lg text-slate-900 mb-2">${title}</h3>
-          <p class="text-xs text-slate-500 leading-relaxed mb-4">${text}</p>
-          <button onclick="this.parentElement.parentElement.remove()" class="w-full bg-indigo-600 text-white font-bold py-2.5 rounded-xl hover:bg-indigo-700 transition-all">확인</button>
-        </div>
-      `;
+    function fillInputsFromRows(rows){
+      const inputs=document.querySelectorAll("input[type='number']");
+      inputs.forEach(i=>{i.value="";i.classList.remove("border-green-500","bg-green-50","border-orange-400","bg-orange-50")});
+      rows.forEach((row,r)=>row.forEach((n,c)=>{const idx=r*6+c;if(inputs[idx]){inputs[idx].value=n;inputs[idx].classList.add(row.length===6?"border-green-500":"border-orange-400",row.length===6?"bg-green-50":"bg-orange-50")}}));
+    }
+    function showResultConfirm(rows, okRows){
+      const letters=["A","B","C","D","E"];
+      const html=rows.map((r,i)=>`<div class="flex justify-between text-sm py-1 border-b border-slate-100"><b>${letters[i]}</b><span class="${r.length===6?'text-slate-700':'text-orange-600'}">${r.length?r.map(n=>String(n).padStart(2,"0")).join("  "):"인식 안됨"}</span></div>`).join("");
+      showCustomModal("인식 결과 확인",`${html}<p class="text-[11px] text-slate-400 mt-3">초록색 칸은 6개 정상 인식, 주황색 칸은 확인 필요입니다. 틀린 칸만 직접 수정하세요.</p>`);
+    }
+    function showCustomModal(title, html){
+      const modal=document.createElement("div");modal.className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-6 z-50";
+      modal.innerHTML=`<div class="bg-white rounded-2xl max-w-sm w-full p-5 text-center shadow-2xl"><h3 class="font-bold text-lg text-slate-900 mb-3">${title}</h3><div class="text-xs text-slate-500 leading-relaxed mb-4 text-left">${html}</div><button onclick="this.parentElement.parentElement.remove()" class="w-full bg-indigo-600 text-white font-bold py-2.5 rounded-xl hover:bg-indigo-700 transition-all">확인</button></div>`;
       document.body.appendChild(modal);
     }
-
-    function showCustomToast(message) {
-      const toast = document.createElement("div");
-      toast.className = "fixed bottom-12 left-1/2 -translate-x-1/2 bg-slate-900/90 text-white text-[12px] font-semibold px-4 py-3 rounded-full shadow-lg z-50 flex items-center gap-1.5";
-      toast.innerHTML = `<i class="fa-solid fa-circle-check text-green-400"></i> ${message}`;
-      document.body.appendChild(toast);
-      setTimeout(() => toast.remove(), 2500);
-    }
-
-    async function generateLotto() {
-      const inputs = document.querySelectorAll("input[type='number']");
-      let excluded = [];
-
-      inputs.forEach(input => {
-        const val = parseInt(input.value);
-        if (!isNaN(val) && val >= 1 && val <= 45) excluded.push(val);
-      });
-
-      excluded = [...new Set(excluded)];
-      let pool = [];
-      for (let i = 1; i <= 45; i++) {
-        if (!excluded.includes(i)) pool.push(i);
-      }
-
-      const resultBox = document.getElementById("resultBox");
-      resultBox.innerHTML = "";
-
-      if (pool.length < 6) {
-        resultBox.innerHTML = `
-          <div class="bg-red-50 border border-red-200 text-red-700 p-4 rounded-2xl flex items-start gap-2">
-            <i class="fa-solid fa-triangle-exclamation mt-1"></i>
-            <div>
-              <h5 class="font-bold text-sm">조합 불가</h5>
-              <p class="text-xs text-red-600/90 mt-1">사용 가능한 번호(${pool.length}개)가 너무 적어 6개 숫자의 로또 조합을 구성할 수 없습니다.</p>
-            </div>
-          </div>
-        `;
-        return;
-      }
-
-      for (let g = 0; g < 5; g++) {
-        let group = [];
-        let poolCopy = [...pool];
-
-        while (group.length < 6 && poolCopy.length > 0) {
-          const idx = Math.floor(Math.random() * poolCopy.length);
-          const num = poolCopy.splice(idx, 1)[0];
-          if (!group.includes(num) && !isConsecutive(group, num)) {
-            group.push(num);
-          }
-        }
-
-        if (group.length < 6) {
-          poolCopy = [...pool].filter(n => !group.includes(n));
-          while (group.length < 6 && poolCopy.length > 0) {
-            const idx = Math.floor(Math.random() * poolCopy.length);
-            group.push(poolCopy.splice(idx, 1)[0]);
-          }
-        }
-
-        group.sort((a, b) => a - b);
-
-        const groupDiv = document.createElement("div");
-        groupDiv.className = "bg-white p-3 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between";
-
-        const alphabet = ['A', 'B', 'C', 'D', 'E'];
-        const labelSpan = document.createElement("span");
-        labelSpan.className = "text-sm font-black text-slate-400 bg-slate-50 w-6 h-6 rounded-lg flex items-center justify-center border border-slate-100";
-        labelSpan.textContent = alphabet[g];
-        groupDiv.appendChild(labelSpan);
-
-        const ballsContainer = document.createElement("div");
-        ballsContainer.className = "flex gap-1.5";
-
-        for (let i = 0; i < group.length; i++) {
-          const ball = document.createElement("span");
-          ball.className = `lotto-ball ${getBallColorClass(group[i])}`;
-          ball.style.animationDelay = `${i * 0.12}s`;
-          ball.textContent = group[i].toString().padStart(2, '0');
-          ballsContainer.appendChild(ball);
-        }
-
-        groupDiv.appendChild(ballsContainer);
-        resultBox.appendChild(groupDiv);
-        await delay(450);
-      }
-    }
-
-    function isConsecutive(group, number) {
-      return group.some(n => Math.abs(n - number) === 1);
-    }
-
-    function delay(ms) {
-      return new Promise(resolve => setTimeout(resolve, ms));
-    }
+    function showCustomToast(message){const toast=document.createElement("div");toast.className="fixed bottom-12 left-1/2 -translate-x-1/2 bg-slate-900/90 text-white text-[12px] font-semibold px-4 py-3 rounded-full shadow-lg z-50 flex items-center gap-1.5";toast.innerHTML=`<i class="fa-solid fa-circle-check text-green-400"></i> ${message}`;document.body.appendChild(toast);setTimeout(()=>toast.remove(),2500)}
+    async function generateLotto(){const inputs=document.querySelectorAll("input[type='number']");let excluded=[];inputs.forEach(input=>{const v=parseInt(input.value);if(!isNaN(v)&&v>=1&&v<=45)excluded.push(v)});excluded=[...new Set(excluded)];let pool=[];for(let i=1;i<=45;i++)if(!excluded.includes(i))pool.push(i);const resultBox=document.getElementById("resultBox");resultBox.innerHTML="";if(pool.length<6){resultBox.innerHTML=`<div class="bg-red-50 border border-red-200 text-red-700 p-4 rounded-2xl flex items-start gap-2"><i class="fa-solid fa-triangle-exclamation mt-1"></i><div><h5 class="font-bold text-sm">조합 불가</h5><p class="text-xs text-red-600/90 mt-1">사용 가능한 번호(${pool.length}개)가 너무 적어 6개 숫자의 로또 조합을 구성할 수 없습니다.</p></div></div>`;return}for(let g=0;g<5;g++){let group=[],poolCopy=[...pool];while(group.length<6&&poolCopy.length>0){const idx=Math.floor(Math.random()*poolCopy.length),num=poolCopy.splice(idx,1)[0];if(!group.includes(num)&&!isConsecutive(group,num))group.push(num)}if(group.length<6){poolCopy=[...pool].filter(n=>!group.includes(n));while(group.length<6&&poolCopy.length>0){const idx=Math.floor(Math.random()*poolCopy.length);group.push(poolCopy.splice(idx,1)[0])}}group.sort((a,b)=>a-b);const div=document.createElement("div");div.className="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between";const label=document.createElement("span");label.className="text-sm font-black text-slate-400 bg-slate-50 w-6 h-6 rounded-lg flex items-center justify-center border border-slate-100";label.textContent=["A","B","C","D","E"][g];div.appendChild(label);const balls=document.createElement("div");balls.className="flex gap-1.5";group.forEach((n,i)=>{const ball=document.createElement("span");ball.className=`lotto-ball ${getBallColorClass(n)}`;ball.style.animationDelay=`${i*.12}s`;ball.textContent=String(n).padStart(2,"0");balls.appendChild(ball)});div.appendChild(balls);resultBox.appendChild(div);await delay(450)}}
+    function isConsecutive(group,n){return group.some(x=>Math.abs(x-n)===1)}
+    function delay(ms){return new Promise(r=>setTimeout(r,ms))}
   </script>
 </body>
 </html>
