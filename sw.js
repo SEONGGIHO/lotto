@@ -1,4 +1,4 @@
-const CACHE_NAME = 'lotto-balance-v9-20260518';
+const CACHE_NAME = 'lotto-balance-v10-20260518';
 const ASSETS = ['./','./index.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png'];
 self.addEventListener('install', event => {
   self.skipWaiting();

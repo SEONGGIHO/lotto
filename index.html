@@ -8,7 +8,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#4f46e5">
   <link rel="manifest" href="./manifest.webmanifest">
-  <title>스마트 로또 보완균형 조합기 v9</title>
+  <title>스마트 로또 보완균형 조합기 v10</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -171,21 +171,33 @@
       return picked;
     }
 
-    function longestConsecutiveRun(row){
-      const a=[...row].sort((x,y)=>x-y); let best=1, cur=1;
-      for(let i=1;i<a.length;i++){ if(a[i]===a[i-1]+1){cur++;best=Math.max(best,cur)} else cur=1; }
-      return best;
+    function consecutiveInfo(row){
+      const a=[...row].sort((x,y)=>x-y);
+      let longest=1, cur=1, pairCount=0;
+      for(let i=1;i<a.length;i++){
+        if(a[i]===a[i-1]+1){
+          pairCount++;
+          cur++;
+          longest=Math.max(longest,cur);
+        }else{
+          cur=1;
+        }
+      }
+      return {longest, pairCount};
     }
     function rowAnalysis(row){
       const odd=row.filter(n=>n%2).length, even=6-odd;
       const sum=row.reduce((a,b)=>a+b,0);
       const zones=[row.filter(n=>n<=15).length,row.filter(n=>n>=16&&n<=30).length,row.filter(n=>n>=31).length];
-      const run=longestConsecutiveRun(row);
-      return {odd,even,sum,zones,run};
+      const seq=consecutiveInfo(row);
+      return {odd,even,sum,zones,run:seq.longest,pairs:seq.pairCount};
     }
     function scoreRow(row){
       const a=rowAnalysis(row); let score=100;
-      if(a.run===2) score-=8; else if(a.run===3) score-=35; else if(a.run>=4) score-=80;
+      // V10: 2연속은 자연스럽게 허용하고, 3연속 이상만 강하게 감점합니다.
+      if(a.run===2) score+=2; else if(a.run===3) score-=28; else if(a.run>=4) score-=85;
+      // 한 줄 안에 2연속 쌍이 2개 이상이면 조금만 감점합니다. 예: 11-12와 33-34가 같이 있는 경우.
+      if(a.pairs>=2 && a.run<3) score-=4*(a.pairs-1);
       const oddDiff=Math.abs(a.odd-a.even); if(oddDiff===4) score-=12; else if(oddDiff===6) score-=35;
       const zeroZones=a.zones.filter(v=>v===0).length; score-=zeroZones*18;
       const maxZone=Math.max(...a.zones); if(maxZone>=5) score-=20; else if(maxZone===4) score-=8;
@@ -207,6 +219,14 @@
       // 전체 구간 분포
       const zones=[flat.filter(n=>n<=15).length,flat.filter(n=>n>=16&&n<=30).length,flat.filter(n=>n>=31).length];
       score-=Math.max(...zones)-Math.min(...zones);
+      // V10: 보완 5게임 전체에서 2연속이 너무 없으면 인위적으로 보여 약간 감점,
+      // 1~3쌍 정도는 자연스럽게 허용합니다. 다만 과하면 감점합니다.
+      const totalPairs=rows.reduce((sum,r)=>sum+rowAnalysis(r).pairs,0);
+      const tripleRows=rows.filter(r=>rowAnalysis(r).run>=3).length;
+      if(totalPairs===0) score-=18;
+      else if(totalPairs>=1 && totalPairs<=3) score+=10;
+      else if(totalPairs>=5) score-=12*(totalPairs-4);
+      score-=tripleRows*20;
       return score;
     }
     function buildCandidate(freq, autoRows){
@@ -283,7 +303,7 @@
         const div=document.createElement('div');
         div.className='bg-white p-3 rounded-2xl shadow-sm border border-slate-100';
         const analysis=rowAnalysis(group);
-        const runText=analysis.run>=3?`${analysis.run}연속 주의`:(analysis.run===2?'2연속 포함':'연속 없음');
+        const runText=analysis.run>=3?`연속 ${analysis.pairs}쌍 · ${analysis.run}연속 주의`:`연속 ${analysis.pairs}쌍`;
         div.innerHTML=`
           <div class="flex items-center justify-between gap-2">
             <span class="text-sm font-black text-slate-400 bg-slate-50 w-7 h-7 rounded-lg flex items-center justify-center border border-slate-100">${letters[g]}</span>
