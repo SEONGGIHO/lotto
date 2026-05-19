@@ -19,7 +19,7 @@
     .ball-21-30{background:radial-gradient(circle at 30% 30%,#fecaca,#dc2626);color:#fff}
     .ball-31-40{background:radial-gradient(circle at 30% 30%,#e2e8f0,#475569);color:#fff}
     .ball-41-45{background:radial-gradient(circle at 30% 30%,#bbf7d0,#16a34a);color:#fff}
-    .lotto-ball{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:9999px;font-weight:900;font-size:16px;box-shadow:0 4px 6px -1px rgba(0,0,0,.16),0 2px 4px -1px rgba(0,0,0,.1);animation:ballPop .35s cubic-bezier(.175,.885,.32,1.275) forwards;opacity:0;transform:scale(.35) rotate(-160deg)}
+    .lotto-ball{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:9999px;font-weight:900;font-size:16px;line-height:1;box-sizing:border-box;padding-bottom:2px;font-variant-numeric:tabular-nums;box-shadow:0 4px 6px -1px rgba(0,0,0,.16),0 2px 4px -1px rgba(0,0,0,.1);animation:ballPop .35s cubic-bezier(.175,.885,.32,1.275) forwards;opacity:0;transform:scale(.35) rotate(-160deg)}
     @keyframes ballPop{to{opacity:1;transform:scale(1) rotate(0deg)}}
     .mini-ball{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:9999px;font-size:11px;font-weight:800;background:#eef2ff;color:#3730a3;margin:1px}
   </style>
@@ -336,7 +336,7 @@
     }
     function ballHtml(n,size=38){
       const c=colorForNumber(n);
-      return `<span style="display:inline-flex;align-items:center;justify-content:center;width:${size}px;height:${size}px;border-radius:9999px;background:${c.bg};color:${c.fg};font-weight:900;font-size:${Math.round(size*0.42)}px;margin:3px;box-shadow:0 2px 5px rgba(0,0,0,.18)">${pad2(n)}</span>`;
+      return `<span style="display:inline-flex;align-items:center;justify-content:center;width:${size}px;height:${size}px;border-radius:9999px;background:${c.bg};color:${c.fg};font-weight:900;font-size:${Math.round(size*0.42)}px;margin:3px;box-shadow:0 2px 5px rgba(0,0,0,.18);line-height:1;box-sizing:border-box;padding-bottom:3px;vertical-align:middle;font-variant-numeric:tabular-nums">${pad2(n)}</span>`;
     }
     function plainRowHtml(label,row,kind){
       const a=rowAnalysis(row);
