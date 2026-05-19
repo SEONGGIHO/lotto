@@ -1,7 +1,7 @@
 {
   "name": "스마트 로또 보완균형 조합기",
   "short_name": "로또보완",
-  "description": "자동 5게임 번호를 붙여넣으면 빠진 번호를 보완해 균형 조합을 생성합니다.",
+  "description": "자동 5게임 번호를 붙여넣으면 빠진 번호를 보완하고 결과를 한장 이미지로 저장합니다.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
